@@ -238,7 +238,7 @@ Before using the agent, ensure you have:
 
 ## Setup Instructions
 
-### Option A: Using Cline (VS Code Extension)
+### Option A: Using Agent as orchestrator
 
 #### Setting Up Your AI Agent
 

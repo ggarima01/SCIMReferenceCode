@@ -44,9 +44,7 @@
     "actions": {
       "Response_Immediate": {
         "runAfter": {
-          "Initialize_SCIM_Test_Variables_2": [
-            "Succeeded"
-          ]
+          "Initialize_SCIM_Test_Variables_2": ["Succeeded"]
         },
         "type": "Response",
         "kind": "Http",
@@ -130,6 +128,19 @@
               }
             },
             {
+              "name": "FederatedIdentityTestOutputs",
+              "type": "Object",
+              "value": {
+                "overallResult": "SKIPPED",
+                "result": "SKIPPED",
+                "summary": null,
+                "detailedResults": [],
+                "errorDetails": {
+                  "summary": null
+                }
+              }
+            },
+            {
               "name": "flattenedUserAttrNames",
               "type": "Array",
               "value": []
@@ -144,9 +155,7 @@
       },
       "Initialize_SCIM_Test_Variables_2": {
         "runAfter": {
-          "Initialize_SCIM_Test_Variables": [
-            "Succeeded"
-          ]
+          "Initialize_SCIM_Test_Variables": ["Succeeded"]
         },
         "type": "InitializeVariable",
         "inputs": {
@@ -320,9 +329,7 @@
               },
               "Filter_User_Schema": {
                 "runAfter": {
-                  "SCIM_Get_Schemas": [
-                    "Succeeded"
-                  ]
+                  "SCIM_Get_Schemas": ["Succeeded"]
                 },
                 "type": "Query",
                 "inputs": {
@@ -332,9 +339,7 @@
               },
               "Filter_EnterpriseUser_Schema": {
                 "runAfter": {
-                  "SCIM_Get_Schemas": [
-                    "Succeeded"
-                  ]
+                  "SCIM_Get_Schemas": ["Succeeded"]
                 },
                 "type": "Query",
                 "inputs": {
@@ -344,9 +349,7 @@
               },
               "Filter_Group_Schema": {
                 "runAfter": {
-                  "SCIM_Get_Schemas": [
-                    "Succeeded"
-                  ]
+                  "SCIM_Get_Schemas": ["Succeeded"]
                 },
                 "type": "Query",
                 "inputs": {
@@ -356,27 +359,21 @@
               },
               "Compose_All_User_Schema_Attrs": {
                 "runAfter": {
-                  "Filter_User_Schema": [
-                    "Succeeded"
-                  ]
+                  "Filter_User_Schema": ["Succeeded"]
                 },
                 "type": "Compose",
                 "inputs": "@coalesce(first(body('Filter_User_Schema'))?['attributes'], json('[]'))"
               },
               "Compose_All_Group_Schema_Attrs": {
                 "runAfter": {
-                  "Filter_Group_Schema": [
-                    "Succeeded"
-                  ]
+                  "Filter_Group_Schema": ["Succeeded"]
                 },
                 "type": "Compose",
                 "inputs": "@coalesce(first(body('Filter_Group_Schema'))?['attributes'], json('[]'))"
               },
               "Reset_FlattenedUserAttrNames": {
                 "runAfter": {
-                  "SCIM_Get_Schemas": [
-                    "Succeeded"
-                  ]
+                  "SCIM_Get_Schemas": ["Succeeded"]
                 },
                 "type": "SetVariable",
                 "inputs": {
@@ -386,9 +383,7 @@
               },
               "Reset_FlattenedGroupAttrNames": {
                 "runAfter": {
-                  "SCIM_Get_Schemas": [
-                    "Succeeded"
-                  ]
+                  "SCIM_Get_Schemas": ["Succeeded"]
                 },
                 "type": "SetVariable",
                 "inputs": {
@@ -398,12 +393,8 @@
               },
               "Flatten_User_Attrs_Loop": {
                 "runAfter": {
-                  "Compose_All_User_Schema_Attrs": [
-                    "Succeeded"
-                  ],
-                  "Reset_FlattenedUserAttrNames": [
-                    "Succeeded"
-                  ]
+                  "Compose_All_User_Schema_Attrs": ["Succeeded"],
+                  "Reset_FlattenedUserAttrNames": ["Succeeded"]
                 },
                 "type": "Foreach",
                 "foreach": "@outputs('Compose_All_User_Schema_Attrs')",
@@ -465,9 +456,7 @@
                             },
                             "Get_User_Filterable_SubAttrs": {
                               "runAfter": {
-                                "Get_User_Type_SubAttr": [
-                                  "Succeeded"
-                                ]
+                                "Get_User_Type_SubAttr": ["Succeeded"]
                               },
                               "type": "Query",
                               "inputs": {
@@ -477,9 +466,7 @@
                             },
                             "Check_User_Has_CanonicalValues": {
                               "runAfter": {
-                                "Get_User_Filterable_SubAttrs": [
-                                  "Succeeded"
-                                ]
+                                "Get_User_Filterable_SubAttrs": ["Succeeded"]
                               },
                               "type": "If",
                               "expression": {
@@ -589,9 +576,7 @@
                                   },
                                   "ForEach_User_Dot_SubAttr": {
                                     "runAfter": {
-                                      "Get_User_Simple_SubAttrs": [
-                                        "Succeeded"
-                                      ]
+                                      "Get_User_Simple_SubAttrs": ["Succeeded"]
                                     },
                                     "type": "Foreach",
                                     "foreach": "@body('Get_User_Simple_SubAttrs')",
@@ -658,12 +643,8 @@
               },
               "Flatten_Group_Attrs_Loop": {
                 "runAfter": {
-                  "Compose_All_Group_Schema_Attrs": [
-                    "Succeeded"
-                  ],
-                  "Reset_FlattenedGroupAttrNames": [
-                    "Succeeded"
-                  ]
+                  "Compose_All_Group_Schema_Attrs": ["Succeeded"],
+                  "Reset_FlattenedGroupAttrNames": ["Succeeded"]
                 },
                 "type": "Foreach",
                 "foreach": "@outputs('Compose_All_Group_Schema_Attrs')",
@@ -725,9 +706,7 @@
                             },
                             "Get_Group_Filterable_SubAttrs": {
                               "runAfter": {
-                                "Get_Group_Type_SubAttr": [
-                                  "Succeeded"
-                                ]
+                                "Get_Group_Type_SubAttr": ["Succeeded"]
                               },
                               "type": "Query",
                               "inputs": {
@@ -737,9 +716,7 @@
                             },
                             "Check_Group_Has_CanonicalValues": {
                               "runAfter": {
-                                "Get_Group_Filterable_SubAttrs": [
-                                  "Succeeded"
-                                ]
+                                "Get_Group_Filterable_SubAttrs": ["Succeeded"]
                               },
                               "type": "If",
                               "expression": {
@@ -849,9 +826,7 @@
                                   },
                                   "ForEach_Group_Dot_SubAttr": {
                                     "runAfter": {
-                                      "Get_Group_Simple_SubAttrs": [
-                                        "Succeeded"
-                                      ]
+                                      "Get_Group_Simple_SubAttrs": ["Succeeded"]
                                     },
                                     "type": "Foreach",
                                     "foreach": "@body('Get_Group_Simple_SubAttrs')",
@@ -918,27 +893,21 @@
               },
               "Compose_User_Lookup_String": {
                 "runAfter": {
-                  "Flatten_Enterprise_User_Attrs_Loop": [
-                    "Succeeded"
-                  ]
+                  "Flatten_Enterprise_User_Attrs_Loop": ["Succeeded"]
                 },
                 "type": "Compose",
                 "inputs": "@toLower(concat('|', join(variables('flattenedUserAttrNames'), '|'), '|'))"
               },
               "Compose_Group_Lookup_String": {
                 "runAfter": {
-                  "Flatten_Group_Attrs_Loop": [
-                    "Succeeded"
-                  ]
+                  "Flatten_Group_Attrs_Loop": ["Succeeded"]
                 },
                 "type": "Compose",
                 "inputs": "@toLower(concat('|', join(variables('flattenedGroupAttrNames'), '|'), '|'))"
               },
               "Filter_Missing_User_Attrs": {
                 "runAfter": {
-                  "Compose_User_Lookup_String": [
-                    "Succeeded"
-                  ]
+                  "Compose_User_Lookup_String": ["Succeeded"]
                 },
                 "type": "Query",
                 "inputs": {
@@ -948,9 +917,7 @@
               },
               "Select_Missing_User_Attr_Names": {
                 "runAfter": {
-                  "Filter_Missing_User_Attrs": [
-                    "Succeeded"
-                  ]
+                  "Filter_Missing_User_Attrs": ["Succeeded"]
                 },
                 "type": "Select",
                 "inputs": {
@@ -960,9 +927,7 @@
               },
               "Filter_Missing_Group_Attrs": {
                 "runAfter": {
-                  "Compose_Group_Lookup_String": [
-                    "Succeeded"
-                  ]
+                  "Compose_Group_Lookup_String": ["Succeeded"]
                 },
                 "type": "Query",
                 "inputs": {
@@ -972,9 +937,7 @@
               },
               "Select_Missing_Group_Attr_Names": {
                 "runAfter": {
-                  "Filter_Missing_Group_Attrs": [
-                    "Succeeded"
-                  ]
+                  "Filter_Missing_Group_Attrs": ["Succeeded"]
                 },
                 "type": "Select",
                 "inputs": {
@@ -984,12 +947,8 @@
               },
               "Compose_Schema_Discoverability_Summary": {
                 "runAfter": {
-                  "Select_Missing_User_Attr_Names": [
-                    "Succeeded"
-                  ],
-                  "Select_Missing_Group_Attr_Names": [
-                    "Succeeded"
-                  ]
+                  "Select_Missing_User_Attr_Names": ["Succeeded"],
+                  "Select_Missing_Group_Attr_Names": ["Succeeded"]
                 },
                 "type": "Compose",
                 "inputs": {
@@ -1015,9 +974,7 @@
               },
               "Set_SchemaDiscoverabilityTestOutputs": {
                 "runAfter": {
-                  "Compose_Schema_Discoverability_Summary": [
-                    "Succeeded"
-                  ]
+                  "Compose_Schema_Discoverability_Summary": ["Succeeded"]
                 },
                 "type": "SetVariable",
                 "inputs": {
@@ -1035,12 +992,8 @@
               },
               "Flatten_Enterprise_User_Attrs_Loop": {
                 "runAfter": {
-                  "Filter_EnterpriseUser_Schema": [
-                    "Succeeded"
-                  ],
-                  "Flatten_User_Attrs_Loop": [
-                    "Succeeded"
-                  ]
+                  "Filter_EnterpriseUser_Schema": ["Succeeded"],
+                  "Flatten_User_Attrs_Loop": ["Succeeded"]
                 },
                 "type": "Foreach",
                 "foreach": "@coalesce(first(body('Filter_EnterpriseUser_Schema'))?['attributes'], json('[]'))",
@@ -1094,16 +1047,10 @@
             "expression": {
               "or": [
                 {
-                  "equals": [
-                    "@triggerBody()?['EnabledTests']",
-                    "All"
-                  ]
+                  "equals": ["@triggerBody()?['EnabledTests']", "All"]
                 },
                 {
-                  "equals": [
-                    "@triggerBody()?['EnabledTests']",
-                    "SCIMTests"
-                  ]
+                  "equals": ["@triggerBody()?['EnabledTests']", "SCIMTests"]
                 },
                 {
                   "equals": [
@@ -1126,9 +1073,7 @@
                   },
                   "Set_SCIM_Null_Create_Base_Body": {
                     "runAfter": {
-                      "Generate_SCIM_Null_Test_UserName": [
-                        "Succeeded"
-                      ]
+                      "Generate_SCIM_Null_Test_UserName": ["Succeeded"]
                     },
                     "type": "SetVariable",
                     "inputs": {
@@ -1153,18 +1098,14 @@
                       },
                       "Compose_Null_Create_New_Body": {
                         "runAfter": {
-                          "Compose_Null_Create_Source_Value": [
-                            "Succeeded"
-                          ]
+                          "Compose_Null_Create_Source_Value": ["Succeeded"]
                         },
                         "type": "Compose",
                         "inputs": "@if(or(or(equals(items('ForEach_Build_Null_Create_Body')?['source'], 'manager'), equals(items('ForEach_Build_Null_Create_Body')?['target'], 'userName')), or(equals(items('ForEach_Build_Null_Create_Body')?['target'], 'active'), equals(items('ForEach_Build_Null_Create_Body')?['target'], 'externalId')), equals(items('ForEach_Build_Null_Create_Body')?['target'], 'roles')), variables('scimNullCreateBody'), if(startsWith(items('ForEach_Build_Null_Create_Body')?['target'], 'urn:ietf:params:scim:schemas:extension:enterprise:2.0:User:'), union(variables('scimNullCreateBody'), json(concat('{\"urn:ietf:params:scim:schemas:extension:enterprise:2.0:User\":', string(setProperty(coalesce(variables('scimNullCreateBody')?['urn:ietf:params:scim:schemas:extension:enterprise:2.0:User'], json('{}')), last(split(items('ForEach_Build_Null_Create_Body')?['target'], ':')), outputs('Compose_Null_Create_Source_Value'))), '}'))), if(contains(items('ForEach_Build_Null_Create_Body')?['target'], '['), setProperty(variables('scimNullCreateBody'), first(split(items('ForEach_Build_Null_Create_Body')?['target'], '[')), setProperty(coalesce(variables('scimNullCreateBody')?[first(split(items('ForEach_Build_Null_Create_Body')?['target'], '['))], json('{}')), first(skip(split(items('ForEach_Build_Null_Create_Body')?['target'], '\"'), 1)), setProperty(coalesce(variables('scimNullCreateBody')?[first(split(items('ForEach_Build_Null_Create_Body')?['target'], '['))]?[first(skip(split(items('ForEach_Build_Null_Create_Body')?['target'], '\"'), 1))], json(concat('{\"type\":\"', first(skip(split(items('ForEach_Build_Null_Create_Body')?['target'], '\"'), 1)), '\",\"primary\":', if(not(contains(string(coalesce(variables('scimNullCreateBody')?[first(split(items('ForEach_Build_Null_Create_Body')?['target'], '['))], json('{}'))), '\"primary\":true')), 'true', 'false'), '}'))), last(split(items('ForEach_Build_Null_Create_Body')?['target'], '.')), outputs('Compose_Null_Create_Source_Value')))), if(contains(items('ForEach_Build_Null_Create_Body')?['target'], '.'), setProperty(variables('scimNullCreateBody'), first(split(items('ForEach_Build_Null_Create_Body')?['target'], '.')), setProperty(coalesce(variables('scimNullCreateBody')?[first(split(items('ForEach_Build_Null_Create_Body')?['target'], '.'))], json('{}')), last(split(items('ForEach_Build_Null_Create_Body')?['target'], '.')), outputs('Compose_Null_Create_Source_Value'))), setProperty(variables('scimNullCreateBody'), items('ForEach_Build_Null_Create_Body')?['target'], outputs('Compose_Null_Create_Source_Value'))))))"
                       },
                       "Set_scimNullCreateBody": {
                         "runAfter": {
-                          "Compose_Null_Create_New_Body": [
-                            "Succeeded"
-                          ]
+                          "Compose_Null_Create_New_Body": ["Succeeded"]
                         },
                         "type": "SetVariable",
                         "inputs": {
@@ -1174,9 +1115,7 @@
                       }
                     },
                     "runAfter": {
-                      "Set_SCIM_Null_Create_Base_Body": [
-                        "Succeeded"
-                      ]
+                      "Set_SCIM_Null_Create_Base_Body": ["Succeeded"]
                     },
                     "type": "Foreach",
                     "runtimeConfiguration": {
@@ -1187,9 +1126,7 @@
                   },
                   "SCIM_Create_Null_Test_User": {
                     "runAfter": {
-                      "ForEach_Convert_To_Arrays": [
-                        "Succeeded"
-                      ]
+                      "ForEach_Convert_To_Arrays": ["Succeeded"]
                     },
                     "type": "Http",
                     "inputs": {
@@ -1205,18 +1142,14 @@
                   },
                   "Compose_SCIM_Null_User_Id": {
                     "runAfter": {
-                      "SCIM_Create_Null_Test_User": [
-                        "Succeeded"
-                      ]
+                      "SCIM_Create_Null_Test_User": ["Succeeded"]
                     },
                     "type": "Compose",
                     "inputs": "@coalesce(body('SCIM_Create_Null_Test_User')?['id'], '')"
                   },
                   "SCIM_Get_User_Before_Null_Update": {
                     "runAfter": {
-                      "Compose_SCIM_Null_User_Id": [
-                        "Succeeded"
-                      ]
+                      "Compose_SCIM_Null_User_Id": ["Succeeded"]
                     },
                     "type": "Http",
                     "inputs": {
@@ -1230,9 +1163,7 @@
                   },
                   "SCIM_Get_Schemas_For_Null_Test": {
                     "runAfter": {
-                      "Compose_SCIM_Null_User_Id": [
-                        "Succeeded"
-                      ]
+                      "Compose_SCIM_Null_User_Id": ["Succeeded"]
                     },
                     "type": "Http",
                     "inputs": {
@@ -1246,9 +1177,7 @@
                   },
                   "Filter_Null_Core_User_Schema": {
                     "runAfter": {
-                      "SCIM_Get_Schemas_For_Null_Test": [
-                        "Succeeded"
-                      ]
+                      "SCIM_Get_Schemas_For_Null_Test": ["Succeeded"]
                     },
                     "type": "Query",
                     "inputs": {
@@ -1258,9 +1187,7 @@
                   },
                   "Filter_Null_Enterprise_User_Schema": {
                     "runAfter": {
-                      "SCIM_Get_Schemas_For_Null_Test": [
-                        "Succeeded"
-                      ]
+                      "SCIM_Get_Schemas_For_Null_Test": ["Succeeded"]
                     },
                     "type": "Query",
                     "inputs": {
@@ -1270,9 +1197,7 @@
                   },
                   "Query_Required_Core_Attrs": {
                     "runAfter": {
-                      "Filter_Null_Core_User_Schema": [
-                        "Succeeded"
-                      ]
+                      "Filter_Null_Core_User_Schema": ["Succeeded"]
                     },
                     "type": "Query",
                     "inputs": {
@@ -1282,9 +1207,7 @@
                   },
                   "Query_Required_Enterprise_Attrs": {
                     "runAfter": {
-                      "Filter_Null_Enterprise_User_Schema": [
-                        "Succeeded"
-                      ]
+                      "Filter_Null_Enterprise_User_Schema": ["Succeeded"]
                     },
                     "type": "Query",
                     "inputs": {
@@ -1294,15 +1217,9 @@
                   },
                   "Filter_Null_Update_Target_Attributes": {
                     "runAfter": {
-                      "SCIM_Get_User_Before_Null_Update": [
-                        "Succeeded"
-                      ],
-                      "Query_Required_Core_Attrs": [
-                        "Succeeded"
-                      ],
-                      "Query_Required_Enterprise_Attrs": [
-                        "Succeeded"
-                      ]
+                      "SCIM_Get_User_Before_Null_Update": ["Succeeded"],
+                      "Query_Required_Core_Attrs": ["Succeeded"],
+                      "Query_Required_Enterprise_Attrs": ["Succeeded"]
                     },
                     "type": "Query",
                     "inputs": {
@@ -1315,9 +1232,7 @@
                     "actions": {
                       "Append_Null_Patch_Operation": {
                         "runAfter": {
-                          "Compose_Null_Patch_Op": [
-                            "Succeeded"
-                          ]
+                          "Compose_Null_Patch_Op": ["Succeeded"]
                         },
                         "type": "AppendToArrayVariable",
                         "inputs": {
@@ -1335,9 +1250,7 @@
                       }
                     },
                     "runAfter": {
-                      "Filter_Null_Update_Target_Attributes": [
-                        "Succeeded"
-                      ]
+                      "Filter_Null_Update_Target_Attributes": ["Succeeded"]
                     },
                     "type": "Foreach",
                     "runtimeConfiguration": {
@@ -1348,9 +1261,7 @@
                   },
                   "Compose_SCIM_Null_Patch_Body": {
                     "runAfter": {
-                      "ForEach_Build_Null_Patch_Operations": [
-                        "Succeeded"
-                      ]
+                      "ForEach_Build_Null_Patch_Operations": ["Succeeded"]
                     },
                     "type": "Compose",
                     "inputs": {
@@ -1362,9 +1273,7 @@
                   },
                   "SCIM_Patch_Null_Update": {
                     "runAfter": {
-                      "Compose_SCIM_Null_Patch_Body": [
-                        "Succeeded"
-                      ]
+                      "Compose_SCIM_Null_Patch_Body": ["Succeeded"]
                     },
                     "type": "Http",
                     "inputs": {
@@ -1380,9 +1289,7 @@
                   },
                   "SCIM_Get_User_After_Null_Update": {
                     "runAfter": {
-                      "SCIM_Patch_Null_Update": [
-                        "Succeeded"
-                      ]
+                      "SCIM_Patch_Null_Update": ["Succeeded"]
                     },
                     "type": "Http",
                     "inputs": {
@@ -1416,18 +1323,14 @@
                       },
                       "Compose_NullVerify_IsNullOrEmpty": {
                         "runAfter": {
-                          "Compose_NullVerify_ActualValue": [
-                            "Succeeded"
-                          ]
+                          "Compose_NullVerify_ActualValue": ["Succeeded"]
                         },
                         "type": "Compose",
                         "inputs": "@or(equals(outputs('Compose_NullVerify_ActualValue'), ''), equals(outputs('Compose_NullVerify_ActualValue'), null))"
                       },
                       "Append_Null_Verification_Result": {
                         "runAfter": {
-                          "Compose_NullVerify_IsNullOrEmpty": [
-                            "Succeeded"
-                          ]
+                          "Compose_NullVerify_IsNullOrEmpty": ["Succeeded"]
                         },
                         "type": "AppendToArrayVariable",
                         "inputs": {
@@ -1443,9 +1346,7 @@
                       }
                     },
                     "runAfter": {
-                      "SCIM_Get_User_After_Null_Update": [
-                        "Succeeded"
-                      ]
+                      "SCIM_Get_User_After_Null_Update": ["Succeeded"]
                     },
                     "type": "Foreach",
                     "runtimeConfiguration": {
@@ -1456,9 +1357,7 @@
                   },
                   "Compose_Null_Patch_Body_Phase2": {
                     "runAfter": {
-                      "ForEach_Verify_Null_Attributes": [
-                        "Succeeded"
-                      ]
+                      "ForEach_Verify_Null_Attributes": ["Succeeded"]
                     },
                     "type": "Compose",
                     "inputs": {
@@ -1470,9 +1369,7 @@
                   },
                   "Select_Null_Patch_Ops_Phase2": {
                     "runAfter": {
-                      "Compose_Null_Patch_Body_Phase2": [
-                        "Succeeded"
-                      ]
+                      "Compose_Null_Patch_Body_Phase2": ["Succeeded"]
                     },
                     "type": "Select",
                     "inputs": {
@@ -1486,9 +1383,7 @@
                   },
                   "Compose_Null_Patch_Request_Phase2": {
                     "runAfter": {
-                      "Select_Null_Patch_Ops_Phase2": [
-                        "Succeeded"
-                      ]
+                      "Select_Null_Patch_Ops_Phase2": ["Succeeded"]
                     },
                     "type": "Compose",
                     "inputs": {
@@ -1500,9 +1395,7 @@
                   },
                   "SCIM_Patch_Null_Update_Phase2": {
                     "runAfter": {
-                      "Compose_Null_Patch_Request_Phase2": [
-                        "Succeeded"
-                      ]
+                      "Compose_Null_Patch_Request_Phase2": ["Succeeded"]
                     },
                     "type": "Http",
                     "inputs": {
@@ -1518,9 +1411,7 @@
                   },
                   "SCIM_Get_User_After_Null_Phase2": {
                     "runAfter": {
-                      "SCIM_Patch_Null_Update_Phase2": [
-                        "Succeeded"
-                      ]
+                      "SCIM_Patch_Null_Update_Phase2": ["Succeeded"]
                     },
                     "type": "Http",
                     "inputs": {
@@ -1534,9 +1425,7 @@
                   },
                   "Select_Null_Phase2_Verify": {
                     "runAfter": {
-                      "SCIM_Get_User_After_Null_Phase2": [
-                        "Succeeded"
-                      ]
+                      "SCIM_Get_User_After_Null_Phase2": ["Succeeded"]
                     },
                     "type": "Select",
                     "inputs": {
@@ -1550,9 +1439,7 @@
                   },
                   "Filter_Failed_Null_Phase2_Verifications": {
                     "runAfter": {
-                      "Select_Null_Phase2_Verify": [
-                        "Succeeded"
-                      ]
+                      "Select_Null_Phase2_Verify": ["Succeeded"]
                     },
                     "type": "Query",
                     "inputs": {
@@ -1562,9 +1449,7 @@
                   },
                   "Filter_Failed_Null_Verifications": {
                     "runAfter": {
-                      "Filter_Failed_Null_Phase2_Verifications": [
-                        "Succeeded"
-                      ]
+                      "Filter_Failed_Null_Phase2_Verifications": ["Succeeded"]
                     },
                     "type": "Query",
                     "inputs": {
@@ -1574,9 +1459,7 @@
                   },
                   "Filter_Passed_Null_Verifications": {
                     "runAfter": {
-                      "Filter_Failed_Null_Phase2_Verifications": [
-                        "Succeeded"
-                      ]
+                      "Filter_Failed_Null_Phase2_Verifications": ["Succeeded"]
                     },
                     "type": "Query",
                     "inputs": {
@@ -1586,12 +1469,8 @@
                   },
                   "Compose_SCIM_Null_Update_Summary": {
                     "runAfter": {
-                      "Filter_Failed_Null_Verifications": [
-                        "Succeeded"
-                      ],
-                      "Filter_Passed_Null_Verifications": [
-                        "Succeeded"
-                      ]
+                      "Filter_Failed_Null_Verifications": ["Succeeded"],
+                      "Filter_Passed_Null_Verifications": ["Succeeded"]
                     },
                     "type": "Compose",
                     "inputs": {
@@ -1632,9 +1511,7 @@
                       "where": "@contains(item()?['target'], '[')"
                     },
                     "runAfter": {
-                      "ForEach_Build_Null_Create_Body": [
-                        "Succeeded"
-                      ]
+                      "ForEach_Build_Null_Create_Body": ["Succeeded"]
                     }
                   },
                   "Select_MultiValue_Parents": {
@@ -1644,18 +1521,14 @@
                       "select": "@first(split(item()?['target'], '['))"
                     },
                     "runAfter": {
-                      "Filter_MultiValue_Targets": [
-                        "Succeeded"
-                      ]
+                      "Filter_MultiValue_Targets": ["Succeeded"]
                     }
                   },
                   "Compose_Unique_Parents": {
                     "type": "Compose",
                     "inputs": "@union(body('Select_MultiValue_Parents'), json('[]'))",
                     "runAfter": {
-                      "Select_MultiValue_Parents": [
-                        "Succeeded"
-                      ]
+                      "Select_MultiValue_Parents": ["Succeeded"]
                     }
                   },
                   "ForEach_Convert_To_Arrays": {
@@ -1677,18 +1550,14 @@
                           "select": "@first(skip(split(item()?['target'], '\"'), 1))"
                         },
                         "runAfter": {
-                          "Filter_Types_For_Parent": [
-                            "Succeeded"
-                          ]
+                          "Filter_Types_For_Parent": ["Succeeded"]
                         }
                       },
                       "Compose_Unique_Types": {
                         "type": "Compose",
                         "inputs": "@union(body('Select_Type_Values'), json('[]'))",
                         "runAfter": {
-                          "Select_Type_Values": [
-                            "Succeeded"
-                          ]
+                          "Select_Type_Values": ["Succeeded"]
                         }
                       },
                       "Select_Build_Array": {
@@ -1698,9 +1567,7 @@
                           "select": "@coalesce(variables('scimNullCreateBody')?[items('ForEach_Convert_To_Arrays')]?[item()], json('{}'))"
                         },
                         "runAfter": {
-                          "Compose_Unique_Types": [
-                            "Succeeded"
-                          ]
+                          "Compose_Unique_Types": ["Succeeded"]
                         }
                       },
                       "Set_Body_Array_Property": {
@@ -1710,25 +1577,19 @@
                           "value": "@outputs('Compose_Updated_Body')"
                         },
                         "runAfter": {
-                          "Compose_Updated_Body": [
-                            "Succeeded"
-                          ]
+                          "Compose_Updated_Body": ["Succeeded"]
                         }
                       },
                       "Compose_Updated_Body": {
                         "type": "Compose",
                         "inputs": "@setProperty(variables('scimNullCreateBody'), items('ForEach_Convert_To_Arrays'), body('Select_Build_Array'))",
                         "runAfter": {
-                          "Select_Build_Array": [
-                            "Succeeded"
-                          ]
+                          "Select_Build_Array": ["Succeeded"]
                         }
                       }
                     },
                     "runAfter": {
-                      "Compose_Unique_Parents": [
-                        "Succeeded"
-                      ]
+                      "Compose_Unique_Parents": ["Succeeded"]
                     },
                     "runtimeConfiguration": {
                       "concurrency": {
@@ -1747,9 +1608,7 @@
                   },
                   "Filter_Failed_SCIM_Null_Update_Actions": {
                     "runAfter": {
-                      "Get_Failed_SCIM_Null_Update_Actions": [
-                        "Succeeded"
-                      ]
+                      "Get_Failed_SCIM_Null_Update_Actions": ["Succeeded"]
                     },
                     "type": "Query",
                     "inputs": {
@@ -1759,9 +1618,7 @@
                   },
                   "Set_SCIM_Null_Update_Failed_Action_Name": {
                     "runAfter": {
-                      "Filter_Failed_SCIM_Null_Update_Actions": [
-                        "Succeeded"
-                      ]
+                      "Filter_Failed_SCIM_Null_Update_Actions": ["Succeeded"]
                     },
                     "type": "SetVariable",
                     "inputs": {
@@ -1771,9 +1628,7 @@
                   },
                   "Set_SCIM_Null_Update_Status_Failed": {
                     "runAfter": {
-                      "Set_SCIM_Null_Update_Failed_Action_Name": [
-                        "Succeeded"
-                      ]
+                      "Set_SCIM_Null_Update_Failed_Action_Name": ["Succeeded"]
                     },
                     "type": "SetVariable",
                     "inputs": {
@@ -1783,17 +1638,13 @@
                   }
                 },
                 "runAfter": {
-                  "SCIM_Null_Update_Test_Actions": [
-                    "Failed"
-                  ]
+                  "SCIM_Null_Update_Test_Actions": ["Failed"]
                 },
                 "type": "Scope"
               },
               "Set_SCIM_Null_Update_Status_Success": {
                 "runAfter": {
-                  "SCIM_Null_Update_Test_Actions": [
-                    "Succeeded"
-                  ]
+                  "SCIM_Null_Update_Test_Actions": ["Succeeded"]
                 },
                 "type": "SetVariable",
                 "inputs": {
@@ -1841,16 +1692,10 @@
             "expression": {
               "or": [
                 {
-                  "equals": [
-                    "@triggerBody()?['EnabledTests']",
-                    "All"
-                  ]
+                  "equals": ["@triggerBody()?['EnabledTests']", "All"]
                 },
                 {
-                  "equals": [
-                    "@triggerBody()?['EnabledTests']",
-                    "SCIMTests"
-                  ]
+                  "equals": ["@triggerBody()?['EnabledTests']", "SCIMTests"]
                 },
                 {
                   "equals": [
@@ -1879,9 +1724,7 @@
                   },
                   "SCIM_Direct_Create_User": {
                     "runAfter": {
-                      "Compose_SCIM_Create_Body": [
-                        "Succeeded"
-                      ]
+                      "Compose_SCIM_Create_Body": ["Succeeded"]
                     },
                     "type": "Http",
                     "inputs": {
@@ -1897,10 +1740,7 @@
                   },
                   "Set_SCIM_Direct_Created_UserId": {
                     "runAfter": {
-                      "SCIM_Direct_Create_User": [
-                        "Succeeded",
-                        "Failed"
-                      ]
+                      "SCIM_Direct_Create_User": ["Succeeded", "Failed"]
                     },
                     "type": "SetVariable",
                     "inputs": {
@@ -1910,9 +1750,7 @@
                   },
                   "Compose_SCIM_User_Create_Summary": {
                     "runAfter": {
-                      "Set_SCIM_Direct_Created_UserId": [
-                        "Succeeded"
-                      ]
+                      "Set_SCIM_Direct_Created_UserId": ["Succeeded"]
                     },
                     "type": "Compose",
                     "inputs": {
@@ -1931,9 +1769,7 @@
                   },
                   "Set_SCIMUserCreateTestOutputs": {
                     "runAfter": {
-                      "Compose_SCIM_User_Create_Summary": [
-                        "Succeeded"
-                      ]
+                      "Compose_SCIM_User_Create_Summary": ["Succeeded"]
                     },
                     "type": "SetVariable",
                     "inputs": {
@@ -1989,9 +1825,7 @@
                   },
                   "Compose_SCIM_Create_Body": {
                     "runAfter": {
-                      "Generate_SCIM_Direct_UserName": [
-                        "Succeeded"
-                      ]
+                      "Generate_SCIM_Direct_UserName": ["Succeeded"]
                     },
                     "type": "Compose",
                     "inputs": "@setProperty(coalesce(triggerBody()?['initializationData']?['scimUserBody'], json('{}')), 'userName', outputs('Generate_SCIM_Direct_UserName'))"
@@ -2007,16 +1841,10 @@
             "expression": {
               "or": [
                 {
-                  "equals": [
-                    "@triggerBody()?['EnabledTests']",
-                    "All"
-                  ]
+                  "equals": ["@triggerBody()?['EnabledTests']", "All"]
                 },
                 {
-                  "equals": [
-                    "@triggerBody()?['EnabledTests']",
-                    "SCIMTests"
-                  ]
+                  "equals": ["@triggerBody()?['EnabledTests']", "SCIMTests"]
                 },
                 {
                   "equals": [
@@ -2039,9 +1867,7 @@
                   },
                   "SCIM_Direct_Create_Group": {
                     "runAfter": {
-                      "Compose_SCIM_Group_Create_Body": [
-                        "Succeeded"
-                      ]
+                      "Compose_SCIM_Group_Create_Body": ["Succeeded"]
                     },
                     "type": "Http",
                     "inputs": {
@@ -2057,10 +1883,7 @@
                   },
                   "Set_SCIM_Direct_Created_GroupId": {
                     "runAfter": {
-                      "SCIM_Direct_Create_Group": [
-                        "Succeeded",
-                        "Failed"
-                      ]
+                      "SCIM_Direct_Create_Group": ["Succeeded", "Failed"]
                     },
                     "type": "SetVariable",
                     "inputs": {
@@ -2070,9 +1893,7 @@
                   },
                   "Compose_SCIM_Group_Create_Summary": {
                     "runAfter": {
-                      "Set_SCIM_Direct_Created_GroupId": [
-                        "Succeeded"
-                      ]
+                      "Set_SCIM_Direct_Created_GroupId": ["Succeeded"]
                     },
                     "type": "Compose",
                     "inputs": {
@@ -2091,9 +1912,7 @@
                   },
                   "Set_SCIMGroupCreateTestOutputs": {
                     "runAfter": {
-                      "Compose_SCIM_Group_Create_Summary": [
-                        "Succeeded"
-                      ]
+                      "Compose_SCIM_Group_Create_Summary": ["Succeeded"]
                     },
                     "type": "SetVariable",
                     "inputs": {
@@ -2149,9 +1968,7 @@
                   },
                   "Compose_SCIM_Group_Create_Body": {
                     "runAfter": {
-                      "Generate_SCIM_Direct_GroupName": [
-                        "Succeeded"
-                      ]
+                      "Generate_SCIM_Direct_GroupName": ["Succeeded"]
                     },
                     "type": "Compose",
                     "inputs": "@setProperty(setProperty(coalesce(triggerBody()?['initializationData']?['scimGroupBody'], json('{}')), 'displayName', outputs('Generate_SCIM_Direct_GroupName')), 'externalId', substring(guid(),0,8))"
@@ -2175,16 +1992,10 @@
                 {
                   "or": [
                     {
-                      "equals": [
-                        "@triggerBody()?['EnabledTests']",
-                        "All"
-                      ]
+                      "equals": ["@triggerBody()?['EnabledTests']", "All"]
                     },
                     {
-                      "equals": [
-                        "@triggerBody()?['EnabledTests']",
-                        "SCIMTests"
-                      ]
+                      "equals": ["@triggerBody()?['EnabledTests']", "SCIMTests"]
                     },
                     {
                       "equals": [
@@ -2209,9 +2020,7 @@
                   },
                   "SCIM_Update_Create_User": {
                     "runAfter": {
-                      "Compose_SCIM_Update_Create_Body": [
-                        "Succeeded"
-                      ]
+                      "Compose_SCIM_Update_Create_Body": ["Succeeded"]
                     },
                     "type": "Http",
                     "inputs": {
@@ -2227,10 +2036,7 @@
                   },
                   "Set_SCIM_Update_UserId": {
                     "runAfter": {
-                      "SCIM_Update_Create_User": [
-                        "Succeeded",
-                        "Failed"
-                      ]
+                      "SCIM_Update_Create_User": ["Succeeded", "Failed"]
                     },
                     "type": "SetVariable",
                     "inputs": {
@@ -2240,9 +2046,7 @@
                   },
                   "Filter_Update_Eligible_Attributes": {
                     "runAfter": {
-                      "Set_SCIM_Update_UserId": [
-                        "Succeeded"
-                      ]
+                      "Set_SCIM_Update_UserId": ["Succeeded"]
                     },
                     "type": "Query",
                     "inputs": {
@@ -2252,9 +2056,7 @@
                   },
                   "Filter_Update_Typed_Attributes": {
                     "runAfter": {
-                      "Filter_Update_Eligible_Attributes": [
-                        "Succeeded"
-                      ]
+                      "Filter_Update_Eligible_Attributes": ["Succeeded"]
                     },
                     "type": "Query",
                     "inputs": {
@@ -2264,9 +2066,7 @@
                   },
                   "Select_Update_Patch_Ops": {
                     "runAfter": {
-                      "Filter_Update_Typed_Attributes": [
-                        "Succeeded"
-                      ]
+                      "Filter_Update_Typed_Attributes": ["Succeeded"]
                     },
                     "type": "Select",
                     "inputs": {
@@ -2280,9 +2080,7 @@
                   },
                   "Compose_Update_Patch_Body": {
                     "runAfter": {
-                      "Select_Update_Patch_Ops": [
-                        "Succeeded"
-                      ]
+                      "Select_Update_Patch_Ops": ["Succeeded"]
                     },
                     "type": "Compose",
                     "inputs": {
@@ -2294,9 +2092,7 @@
                   },
                   "Check_Update_Has_Eligible_Attrs": {
                     "runAfter": {
-                      "Compose_Update_Patch_Body": [
-                        "Succeeded"
-                      ]
+                      "Compose_Update_Patch_Body": ["Succeeded"]
                     },
                     "type": "If",
                     "expression": {
@@ -2337,10 +2133,7 @@
                       },
                       "SCIM_Update_Get_User": {
                         "runAfter": {
-                          "SCIM_Update_Patch_User": [
-                            "Succeeded",
-                            "Failed"
-                          ]
+                          "SCIM_Update_Patch_User": ["Succeeded", "Failed"]
                         },
                         "type": "Http",
                         "inputs": {
@@ -2354,10 +2147,7 @@
                       },
                       "Compose_Update_Verification": {
                         "runAfter": {
-                          "SCIM_Update_Get_User": [
-                            "Succeeded",
-                            "Failed"
-                          ]
+                          "SCIM_Update_Get_User": ["Succeeded", "Failed"]
                         },
                         "type": "Select",
                         "inputs": {
@@ -2372,9 +2162,7 @@
                       },
                       "Filter_Update_Mismatches": {
                         "runAfter": {
-                          "Compose_Update_Verification": [
-                            "Succeeded"
-                          ]
+                          "Compose_Update_Verification": ["Succeeded"]
                         },
                         "type": "Query",
                         "inputs": {
@@ -2419,9 +2207,7 @@
                   },
                   "Set_SCIMUserUpdateTestOutputs": {
                     "runAfter": {
-                      "Compose_SCIM_User_Update_Summary": [
-                        "Succeeded"
-                      ]
+                      "Compose_SCIM_User_Update_Summary": ["Succeeded"]
                     },
                     "type": "SetVariable",
                     "inputs": {
@@ -2477,9 +2263,7 @@
                   },
                   "Compose_SCIM_Update_Create_Body": {
                     "runAfter": {
-                      "Generate_SCIM_Update_UserName": [
-                        "Succeeded"
-                      ]
+                      "Generate_SCIM_Update_UserName": ["Succeeded"]
                     },
                     "type": "Compose",
                     "inputs": "@setProperty(coalesce(triggerBody()?['initializationData']?['scimUserBody'], json('{}')), 'userName', outputs('Generate_SCIM_Update_UserName'))"
@@ -2495,16 +2279,10 @@
             "expression": {
               "or": [
                 {
-                  "equals": [
-                    "@triggerBody()?['EnabledTests']",
-                    "All"
-                  ]
+                  "equals": ["@triggerBody()?['EnabledTests']", "All"]
                 },
                 {
-                  "equals": [
-                    "@triggerBody()?['EnabledTests']",
-                    "SCIMTests"
-                  ]
+                  "equals": ["@triggerBody()?['EnabledTests']", "SCIMTests"]
                 },
                 {
                   "equals": [
@@ -2527,9 +2305,7 @@
                   },
                   "SCIM_GroupUpdate_Create_Group": {
                     "runAfter": {
-                      "Compose_GroupUpdate_Create_Body": [
-                        "Succeeded"
-                      ]
+                      "Compose_GroupUpdate_Create_Body": ["Succeeded"]
                     },
                     "type": "Http",
                     "inputs": {
@@ -2545,10 +2321,7 @@
                   },
                   "Set_SCIM_GroupUpdate_GroupId": {
                     "runAfter": {
-                      "SCIM_GroupUpdate_Create_Group": [
-                        "Succeeded",
-                        "Failed"
-                      ]
+                      "SCIM_GroupUpdate_Create_Group": ["Succeeded", "Failed"]
                     },
                     "type": "SetVariable",
                     "inputs": {
@@ -2584,9 +2357,7 @@
                   },
                   "Set_SCIMGroupUpdateTestOutputs": {
                     "runAfter": {
-                      "Compose_SCIM_Group_Update_Summary": [
-                        "Succeeded"
-                      ]
+                      "Compose_SCIM_Group_Update_Summary": ["Succeeded"]
                     },
                     "type": "SetVariable",
                     "inputs": {
@@ -2642,18 +2413,14 @@
                   },
                   "Compose_GroupUpdate_Create_Body": {
                     "runAfter": {
-                      "Generate_SCIM_GroupUpdate_GroupName": [
-                        "Succeeded"
-                      ]
+                      "Generate_SCIM_GroupUpdate_GroupName": ["Succeeded"]
                     },
                     "type": "Compose",
                     "inputs": "@setProperty(setProperty(coalesce(triggerBody()?['initializationData']?['scimGroupBody'], json('{}')), 'displayName', outputs('Generate_SCIM_GroupUpdate_GroupName')), 'externalId', substring(guid(),0,8))"
                   },
                   "Filter_GroupUpdate_Eligible": {
                     "runAfter": {
-                      "Set_SCIM_GroupUpdate_GroupId": [
-                        "Succeeded"
-                      ]
+                      "Set_SCIM_GroupUpdate_GroupId": ["Succeeded"]
                     },
                     "type": "Query",
                     "inputs": {
@@ -2663,9 +2430,7 @@
                   },
                   "Select_GroupUpdate_Patch_Ops": {
                     "runAfter": {
-                      "Filter_GroupUpdate_Eligible": [
-                        "Succeeded"
-                      ]
+                      "Filter_GroupUpdate_Eligible": ["Succeeded"]
                     },
                     "type": "Select",
                     "inputs": {
@@ -2679,9 +2444,7 @@
                   },
                   "Compose_GroupUpdate_Patch_Body": {
                     "runAfter": {
-                      "Select_GroupUpdate_Patch_Ops": [
-                        "Succeeded"
-                      ]
+                      "Select_GroupUpdate_Patch_Ops": ["Succeeded"]
                     },
                     "type": "Compose",
                     "inputs": {
@@ -2693,9 +2456,7 @@
                   },
                   "Check_GroupUpdate_Has_GroupId": {
                     "runAfter": {
-                      "Compose_GroupUpdate_Patch_Body": [
-                        "Succeeded"
-                      ]
+                      "Compose_GroupUpdate_Patch_Body": ["Succeeded"]
                     },
                     "type": "If",
                     "expression": {
@@ -2743,10 +2504,7 @@
                       },
                       "Compose_GroupUpdate_Verification": {
                         "runAfter": {
-                          "SCIM_GroupUpdate_Get_Group": [
-                            "Succeeded",
-                            "Failed"
-                          ]
+                          "SCIM_GroupUpdate_Get_Group": ["Succeeded", "Failed"]
                         },
                         "type": "Select",
                         "inputs": {
@@ -2761,9 +2519,7 @@
                       },
                       "Filter_GroupUpdate_Mismatches": {
                         "runAfter": {
-                          "Compose_GroupUpdate_Verification": [
-                            "Succeeded"
-                          ]
+                          "Compose_GroupUpdate_Verification": ["Succeeded"]
                         },
                         "type": "Query",
                         "inputs": {
@@ -2795,16 +2551,10 @@
                 {
                   "or": [
                     {
-                      "equals": [
-                        "@triggerBody()?['EnabledTests']",
-                        "All"
-                      ]
+                      "equals": ["@triggerBody()?['EnabledTests']", "All"]
                     },
                     {
-                      "equals": [
-                        "@triggerBody()?['EnabledTests']",
-                        "SCIMTests"
-                      ]
+                      "equals": ["@triggerBody()?['EnabledTests']", "SCIMTests"]
                     },
                     {
                       "equals": [
@@ -2834,11 +2584,7 @@
               },
               "Check_Token_Acquired": {
                 "runAfter": {
-                  "Acquire_OAuth2_Token": [
-                    "Succeeded",
-                    "Failed",
-                    "TimedOut"
-                  ]
+                  "Acquire_OAuth2_Token": ["Succeeded", "Failed", "TimedOut"]
                 },
                 "type": "If",
                 "expression": {
@@ -2956,21 +2702,531 @@
             "expression": {
               "or": [
                 {
-                  "equals": [
-                    "@triggerBody()?['EnabledTests']",
-                    "All"
-                  ]
+                  "equals": ["@triggerBody()?['EnabledTests']", "All"]
                 },
                 {
-                  "equals": [
-                    "@triggerBody()?['EnabledTests']",
-                    "SCIMTests"
-                  ]
+                  "equals": ["@triggerBody()?['EnabledTests']", "SCIMTests"]
                 },
                 {
                   "equals": [
                     "@triggerBody()?['EnabledTests']",
                     "Validate_Credentials_Test"
+                  ]
+                }
+              ]
+            },
+            "type": "If"
+          },
+          "Federated_Identity_Test": {
+            "runAfter": {},
+            "actions": {
+              "Acquire_Entra_Token": {
+                "type": "Http",
+                "inputs": {
+                  "uri": "@{concat('https://login.microsoftonline.com/', parameters('federatedEntraTenantId'), '/oauth2/v2.0/token')}",
+                  "method": "POST",
+                  "headers": {
+                    "Content-Type": "application/x-www-form-urlencoded"
+                  },
+                  "body": "@{concat('grant_type=client_credentials&client_id=', encodeUriComponent(parameters('federatedApplicationId')), '&client_secret=', encodeUriComponent(parameters('federatedApplicationClientSecret')), '&scope=', encodeUriComponent(concat('api://', parameters('federatedApplicationId'), '/.default')))}"
+                }
+              },
+              "Check_Entra_Token_Acquired": {
+                "runAfter": {
+                  "Acquire_Entra_Token": ["Succeeded", "Failed", "TimedOut"]
+                },
+                "type": "If",
+                "expression": {
+                  "and": [
+                    {
+                      "greaterOrEquals": [
+                        "@coalesce(outputs('Acquire_Entra_Token')?['statusCode'], 0)",
+                        200
+                      ]
+                    },
+                    {
+                      "less": [
+                        "@coalesce(outputs('Acquire_Entra_Token')?['statusCode'], 0)",
+                        300
+                      ]
+                    },
+                    {
+                      "not": {
+                        "equals": [
+                          "@coalesce(body('Acquire_Entra_Token')?['access_token'], '')",
+                          ""
+                        ]
+                      }
+                    }
+                  ]
+                },
+                "actions": {
+                  "Check_Is_Google_SA_Flow": {
+                    "type": "If",
+                    "expression": {
+                      "and": [
+                        {
+                          "contains": [
+                            "@parameters('federatedTokenEndpoint')",
+                            "googleapis.com"
+                          ]
+                        },
+                        {
+                          "contains": [
+                            "@parameters('federatedTokenEndpoint')",
+                            "serviceAccounts"
+                          ]
+                        }
+                      ]
+                    },
+                    "actions": {
+                      "Acquire_Google_STS_Token": {
+                        "type": "Http",
+                        "inputs": {
+                          "uri": "https://sts.googleapis.com/v1/token",
+                          "method": "POST",
+                          "headers": {
+                            "Content-Type": "application/json"
+                          },
+                          "body": {
+                            "grant_type": "urn:ietf:params:oauth:grant-type:token-exchange",
+                            "audience": "@{parameters('federatedAudience')}",
+                            "requested_token_type": "urn:ietf:params:oauth:token-type:access_token",
+                            "subject_token": "@{body('Acquire_Entra_Token')?['access_token']}",
+                            "subject_token_type": "urn:ietf:params:oauth:token-type:id_token",
+                            "scope": "https://www.googleapis.com/auth/cloud-platform"
+                          }
+                        }
+                      },
+                      "Check_Google_STS_Token": {
+                        "runAfter": {
+                          "Acquire_Google_STS_Token": [
+                            "Succeeded",
+                            "Failed",
+                            "TimedOut"
+                          ]
+                        },
+                        "type": "If",
+                        "expression": {
+                          "and": [
+                            {
+                              "greaterOrEquals": [
+                                "@coalesce(outputs('Acquire_Google_STS_Token')?['statusCode'], 0)",
+                                200
+                              ]
+                            },
+                            {
+                              "less": [
+                                "@coalesce(outputs('Acquire_Google_STS_Token')?['statusCode'], 0)",
+                                300
+                              ]
+                            },
+                            {
+                              "not": {
+                                "equals": [
+                                  "@coalesce(body('Acquire_Google_STS_Token')?['access_token'], '')",
+                                  ""
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        "actions": {
+                          "Acquire_Google_SA_Token": {
+                            "type": "Http",
+                            "inputs": {
+                              "uri": "@{parameters('federatedTokenEndpoint')}",
+                              "method": "POST",
+                              "headers": {
+                                "Content-Type": "application/json",
+                                "Authorization": "@{concat('Bearer ', body('Acquire_Google_STS_Token')?['access_token'])}"
+                              },
+                              "body": {
+                                "scope": [
+                                  "https://www.googleapis.com/auth/cloud-platform"
+                                ]
+                              }
+                            }
+                          },
+                          "Check_Google_SA_Token": {
+                            "runAfter": {
+                              "Acquire_Google_SA_Token": [
+                                "Succeeded",
+                                "Failed",
+                                "TimedOut"
+                              ]
+                            },
+                            "type": "If",
+                            "expression": {
+                              "and": [
+                                {
+                                  "greaterOrEquals": [
+                                    "@coalesce(outputs('Acquire_Google_SA_Token')?['statusCode'], 0)",
+                                    200
+                                  ]
+                                },
+                                {
+                                  "less": [
+                                    "@coalesce(outputs('Acquire_Google_SA_Token')?['statusCode'], 0)",
+                                    300
+                                  ]
+                                },
+                                {
+                                  "not": {
+                                    "equals": [
+                                      "@coalesce(body('Acquire_Google_SA_Token')?['accessToken'], '')",
+                                      ""
+                                    ]
+                                  }
+                                }
+                              ]
+                            },
+                            "actions": {
+                              "Compose_Federated_Validation_Summary_GoogleSA": {
+                                "type": "Compose",
+                                "inputs": {
+                                  "testName": "Federated_Identity_Test",
+                                  "timestamp": "@utcNow()",
+                                  "authMode": "FederatedIdentity_Google_SA",
+                                  "entraTokenAcquisition": {
+                                    "endpoint": "@concat('https://login.microsoftonline.com/', parameters('federatedEntraTenantId'), '/oauth2/v2.0/token')",
+                                    "statusCode": "@outputs('Acquire_Entra_Token')['statusCode']",
+                                    "passed": true
+                                  },
+                                  "googleStsTokenExchange": {
+                                    "endpoint": "https://sts.googleapis.com/v1/token",
+                                    "statusCode": "@outputs('Acquire_Google_STS_Token')['statusCode']",
+                                    "passed": true
+                                  },
+                                  "googleSaImpersonation": {
+                                    "endpoint": "@parameters('federatedTokenEndpoint')",
+                                    "statusCode": "@outputs('Acquire_Google_SA_Token')['statusCode']",
+                                    "passed": true
+                                  },
+                                  "overallResult": "PASSED"
+                                }
+                              }
+                            },
+                            "else": {
+                              "actions": {
+                                "Compose_Federated_Validation_Summary_GoogleSA_Fail": {
+                                  "type": "Compose",
+                                  "inputs": {
+                                    "testName": "Federated_Identity_Test",
+                                    "timestamp": "@utcNow()",
+                                    "authMode": "FederatedIdentity_Google_SA",
+                                    "entraTokenAcquisition": {
+                                      "passed": true
+                                    },
+                                    "googleStsTokenExchange": {
+                                      "passed": true
+                                    },
+                                    "googleSaImpersonation": {
+                                      "endpoint": "@parameters('federatedTokenEndpoint')",
+                                      "statusCode": "@coalesce(outputs('Acquire_Google_SA_Token')?['statusCode'], 0)",
+                                      "hasAccessToken": "@not(equals(coalesce(body('Acquire_Google_SA_Token')?['accessToken'], ''), ''))",
+                                      "passed": false
+                                    },
+                                    "overallResult": "FAILED"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "else": {
+                          "actions": {
+                            "Compose_Federated_Validation_Summary_GoogleSTS_Fail": {
+                              "type": "Compose",
+                              "inputs": {
+                                "testName": "Federated_Identity_Test",
+                                "timestamp": "@utcNow()",
+                                "authMode": "FederatedIdentity_Google_SA",
+                                "entraTokenAcquisition": {
+                                  "passed": true
+                                },
+                                "googleStsTokenExchange": {
+                                  "endpoint": "https://sts.googleapis.com/v1/token",
+                                  "statusCode": "@coalesce(outputs('Acquire_Google_STS_Token')?['statusCode'], 0)",
+                                  "hasAccessToken": "@not(equals(coalesce(body('Acquire_Google_STS_Token')?['access_token'], ''), ''))",
+                                  "passed": false
+                                },
+                                "overallResult": "FAILED"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "else": {
+                      "actions": {
+                        "Check_Is_Google_STS_Flow": {
+                          "type": "If",
+                          "expression": {
+                            "and": [
+                              {
+                                "contains": [
+                                  "@parameters('federatedTokenEndpoint')",
+                                  "googleapis.com"
+                                ]
+                              }
+                            ]
+                          },
+                          "actions": {
+                            "Acquire_Google_STS_Token_Only": {
+                              "type": "Http",
+                              "inputs": {
+                                "uri": "@{parameters('federatedTokenEndpoint')}",
+                                "method": "POST",
+                                "headers": {
+                                  "Content-Type": "application/json"
+                                },
+                                "body": {
+                                  "grant_type": "urn:ietf:params:oauth:grant-type:token-exchange",
+                                  "audience": "@{parameters('federatedAudience')}",
+                                  "requested_token_type": "urn:ietf:params:oauth:token-type:access_token",
+                                  "subject_token": "@{body('Acquire_Entra_Token')?['access_token']}",
+                                  "subject_token_type": "urn:ietf:params:oauth:token-type:id_token",
+                                  "scope": "https://www.googleapis.com/auth/cloud-platform"
+                                }
+                              }
+                            },
+                            "Check_Google_STS_Only_Token": {
+                              "runAfter": {
+                                "Acquire_Google_STS_Token_Only": [
+                                  "Succeeded",
+                                  "Failed",
+                                  "TimedOut"
+                                ]
+                              },
+                              "type": "If",
+                              "expression": {
+                                "and": [
+                                  {
+                                    "greaterOrEquals": [
+                                      "@coalesce(outputs('Acquire_Google_STS_Token_Only')?['statusCode'], 0)",
+                                      200
+                                    ]
+                                  },
+                                  {
+                                    "less": [
+                                      "@coalesce(outputs('Acquire_Google_STS_Token_Only')?['statusCode'], 0)",
+                                      300
+                                    ]
+                                  },
+                                  {
+                                    "not": {
+                                      "equals": [
+                                        "@coalesce(body('Acquire_Google_STS_Token_Only')?['access_token'], '')",
+                                        ""
+                                      ]
+                                    }
+                                  }
+                                ]
+                              },
+                              "actions": {
+                                "Compose_Federated_Validation_Summary_GoogleSTSOnly": {
+                                  "type": "Compose",
+                                  "inputs": {
+                                    "testName": "Federated_Identity_Test",
+                                    "timestamp": "@utcNow()",
+                                    "authMode": "FederatedIdentity_Google_STS",
+                                    "entraTokenAcquisition": {
+                                      "endpoint": "@concat('https://login.microsoftonline.com/', parameters('federatedEntraTenantId'), '/oauth2/v2.0/token')",
+                                      "statusCode": "@outputs('Acquire_Entra_Token')['statusCode']",
+                                      "passed": true
+                                    },
+                                    "googleStsTokenExchange": {
+                                      "endpoint": "@parameters('federatedTokenEndpoint')",
+                                      "statusCode": "@outputs('Acquire_Google_STS_Token_Only')['statusCode']",
+                                      "passed": true
+                                    },
+                                    "overallResult": "PASSED"
+                                  }
+                                }
+                              },
+                              "else": {
+                                "actions": {
+                                  "Compose_Federated_Validation_Summary_GoogleSTSOnly_Fail": {
+                                    "type": "Compose",
+                                    "inputs": {
+                                      "testName": "Federated_Identity_Test",
+                                      "timestamp": "@utcNow()",
+                                      "authMode": "FederatedIdentity_Google_STS",
+                                      "entraTokenAcquisition": {
+                                        "passed": true
+                                      },
+                                      "googleStsTokenExchange": {
+                                        "endpoint": "@parameters('federatedTokenEndpoint')",
+                                        "statusCode": "@coalesce(outputs('Acquire_Google_STS_Token_Only')?['statusCode'], 0)",
+                                        "hasAccessToken": "@not(equals(coalesce(body('Acquire_Google_STS_Token_Only')?['access_token'], ''), ''))",
+                                        "passed": false
+                                      },
+                                      "overallResult": "FAILED"
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "else": {
+                            "actions": {
+                              "Acquire_Federated_Token": {
+                                "type": "Http",
+                                "inputs": {
+                                  "uri": "@{parameters('federatedTokenEndpoint')}",
+                                  "method": "POST",
+                                  "headers": {
+                                    "Content-Type": "application/x-www-form-urlencoded"
+                                  },
+                                  "body": "@{concat('grant_type=client_credentials&client_id=', encodeUriComponent(parameters('federatedClientId')), '&client_assertion=', encodeUriComponent(body('Acquire_Entra_Token')?['access_token']), '&client_assertion_type=', encodeUriComponent('urn:ietf:params:oauth:client-assertion-type:jwt-bearer'), '&baseAddress=', encodeUriComponent(parameters('federatedBaseAddress')))}"
+                                }
+                              },
+                              "Check_Federated_Token_Acquired": {
+                                "runAfter": {
+                                  "Acquire_Federated_Token": [
+                                    "Succeeded",
+                                    "Failed",
+                                    "TimedOut"
+                                  ]
+                                },
+                                "type": "If",
+                                "expression": {
+                                  "and": [
+                                    {
+                                      "greaterOrEquals": [
+                                        "@coalesce(outputs('Acquire_Federated_Token')?['statusCode'], 0)",
+                                        200
+                                      ]
+                                    },
+                                    {
+                                      "less": [
+                                        "@coalesce(outputs('Acquire_Federated_Token')?['statusCode'], 0)",
+                                        300
+                                      ]
+                                    },
+                                    {
+                                      "not": {
+                                        "equals": [
+                                          "@coalesce(body('Acquire_Federated_Token')?['access_token'], '')",
+                                          ""
+                                        ]
+                                      }
+                                    }
+                                  ]
+                                },
+                                "actions": {
+                                  "Compose_Federated_Validation_Summary": {
+                                    "type": "Compose",
+                                    "inputs": {
+                                      "testName": "Federated_Identity_Test",
+                                      "timestamp": "@utcNow()",
+                                      "authMode": "FederatedIdentity",
+                                      "entraTokenAcquisition": {
+                                        "endpoint": "@concat('https://login.microsoftonline.com/', parameters('federatedEntraTenantId'), '/oauth2/v2.0/token')",
+                                        "statusCode": "@outputs('Acquire_Entra_Token')['statusCode']",
+                                        "passed": true
+                                      },
+                                      "federatedTokenExchange": {
+                                        "endpoint": "@parameters('federatedTokenEndpoint')",
+                                        "statusCode": "@outputs('Acquire_Federated_Token')['statusCode']",
+                                        "passed": true
+                                      },
+                                      "overallResult": "PASSED"
+                                    }
+                                  }
+                                },
+                                "else": {
+                                  "actions": {
+                                    "Compose_Federated_Validation_Summary_TokenFail": {
+                                      "type": "Compose",
+                                      "inputs": {
+                                        "testName": "Federated_Identity_Test",
+                                        "timestamp": "@utcNow()",
+                                        "authMode": "FederatedIdentity",
+                                        "entraTokenAcquisition": {
+                                          "passed": true
+                                        },
+                                        "federatedTokenExchange": {
+                                          "endpoint": "@parameters('federatedTokenEndpoint')",
+                                          "statusCode": "@coalesce(outputs('Acquire_Federated_Token')?['statusCode'], 0)",
+                                          "hasAccessToken": "@not(equals(coalesce(body('Acquire_Federated_Token')?['access_token'], ''), ''))",
+                                          "passed": false
+                                        },
+                                        "overallResult": "FAILED"
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "else": {
+                  "actions": {
+                    "Compose_Federated_Validation_Summary_EntraFail": {
+                      "type": "Compose",
+                      "inputs": {
+                        "testName": "Federated_Identity_Test",
+                        "timestamp": "@utcNow()",
+                        "authMode": "FederatedIdentity",
+                        "entraTokenAcquisition": {
+                          "endpoint": "@concat('https://login.microsoftonline.com/', parameters('federatedEntraTenantId'), '/oauth2/v2.0/token')",
+                          "statusCode": "@coalesce(outputs('Acquire_Entra_Token')?['statusCode'], 0)",
+                          "hasAccessToken": "@not(equals(coalesce(body('Acquire_Entra_Token')?['access_token'], ''), ''))",
+                          "passed": false
+                        },
+                        "federatedTokenExchange": null,
+                        "scimEndpointValidation": null,
+                        "overallResult": "FAILED"
+                      }
+                    }
+                  }
+                }
+              },
+              "Set_FederatedIdentityTestOutputs": {
+                "runAfter": {
+                  "Check_Entra_Token_Acquired": [
+                    "Succeeded",
+                    "Failed",
+                    "TimedOut",
+                    "Skipped"
+                  ]
+                },
+                "type": "SetVariable",
+                "inputs": {
+                  "name": "FederatedIdentityTestOutputs",
+                  "value": {
+                    "overallResult": "@coalesce(outputs('Compose_Federated_Validation_Summary')?['overallResult'], outputs('Compose_Federated_Validation_Summary_TokenFail')?['overallResult'], outputs('Compose_Federated_Validation_Summary_GoogleSA')?['overallResult'], outputs('Compose_Federated_Validation_Summary_GoogleSA_Fail')?['overallResult'], outputs('Compose_Federated_Validation_Summary_GoogleSTS_Fail')?['overallResult'], outputs('Compose_Federated_Validation_Summary_GoogleSTSOnly')?['overallResult'], outputs('Compose_Federated_Validation_Summary_GoogleSTSOnly_Fail')?['overallResult'], outputs('Compose_Federated_Validation_Summary_EntraFail')?['overallResult'], 'FAILED')",
+                    "result": "@if(equals(coalesce(outputs('Compose_Federated_Validation_Summary')?['overallResult'], outputs('Compose_Federated_Validation_Summary_GoogleSA')?['overallResult'], outputs('Compose_Federated_Validation_Summary_GoogleSTSOnly')?['overallResult'], outputs('Compose_Federated_Validation_Summary_TokenFail')?['overallResult'], outputs('Compose_Federated_Validation_Summary_GoogleSA_Fail')?['overallResult'], outputs('Compose_Federated_Validation_Summary_GoogleSTS_Fail')?['overallResult'], outputs('Compose_Federated_Validation_Summary_GoogleSTSOnly_Fail')?['overallResult'], outputs('Compose_Federated_Validation_Summary_EntraFail')?['overallResult'], 'FAILED'), 'PASSED'), 'success', if(not(empty(coalesce(outputs('Compose_Federated_Validation_Summary_EntraFail'), json('null')))), 'Entra token acquisition failed', 'Federated token exchange failed'))",
+                    "summary": "@coalesce(outputs('Compose_Federated_Validation_Summary'), outputs('Compose_Federated_Validation_Summary_TokenFail'), outputs('Compose_Federated_Validation_Summary_GoogleSA'), outputs('Compose_Federated_Validation_Summary_GoogleSA_Fail'), outputs('Compose_Federated_Validation_Summary_GoogleSTS_Fail'), outputs('Compose_Federated_Validation_Summary_GoogleSTSOnly'), outputs('Compose_Federated_Validation_Summary_GoogleSTSOnly_Fail'), outputs('Compose_Federated_Validation_Summary_EntraFail'))",
+                    "detailedResults": [],
+                    "errorDetails": {
+                      "summary": "@if(equals(coalesce(outputs('Compose_Federated_Validation_Summary')?['overallResult'], outputs('Compose_Federated_Validation_Summary_GoogleSA')?['overallResult'], outputs('Compose_Federated_Validation_Summary_GoogleSTSOnly')?['overallResult'], outputs('Compose_Federated_Validation_Summary_TokenFail')?['overallResult'], outputs('Compose_Federated_Validation_Summary_GoogleSA_Fail')?['overallResult'], outputs('Compose_Federated_Validation_Summary_GoogleSTS_Fail')?['overallResult'], outputs('Compose_Federated_Validation_Summary_GoogleSTSOnly_Fail')?['overallResult'], outputs('Compose_Federated_Validation_Summary_EntraFail')?['overallResult'], 'FAILED'), 'PASSED'), null, if(not(empty(coalesce(outputs('Compose_Federated_Validation_Summary_EntraFail'), json('null')))), concat('Entra token acquisition failed. Status: ', string(coalesce(outputs('Acquire_Entra_Token')?['statusCode'], 0))), if(not(empty(coalesce(outputs('Compose_Federated_Validation_Summary_GoogleSTS_Fail'), json('null')))), concat('Google STS token exchange failed. Status: ', string(coalesce(outputs('Acquire_Google_STS_Token')?['statusCode'], 0))), if(not(empty(coalesce(outputs('Compose_Federated_Validation_Summary_GoogleSA_Fail'), json('null')))), concat('Google SA impersonation failed. Status: ', string(coalesce(outputs('Acquire_Google_SA_Token')?['statusCode'], 0))), if(not(empty(coalesce(outputs('Compose_Federated_Validation_Summary_GoogleSTSOnly_Fail'), json('null')))), concat('Google STS token exchange failed. Status: ', string(coalesce(outputs('Acquire_Google_STS_Token_Only')?['statusCode'], 0))), concat('Federated token exchange failed. Status: ', string(coalesce(outputs('Acquire_Federated_Token')?['statusCode'], 0))))))))"
+                    }
+                  }
+                }
+              }
+            },
+            "else": {
+              "actions": {}
+            },
+            "expression": {
+              "or": [
+                {
+                  "equals": ["@triggerBody()?['EnabledTests']", "All"]
+                },
+                {
+                  "equals": ["@triggerBody()?['EnabledTests']", "SCIMTests"]
+                },
+                {
+                  "equals": [
+                    "@triggerBody()?['EnabledTests']",
+                    "Federated_Identity_Test"
                   ]
                 }
               ]
@@ -3006,9 +3262,7 @@
                   },
                   "Check_User_Pagination_Need_Create": {
                     "runAfter": {
-                      "Compose_User_Pagination_Users_To_Create": [
-                        "Succeeded"
-                      ]
+                      "Compose_User_Pagination_Users_To_Create": ["Succeeded"]
                     },
                     "type": "If",
                     "expression": {
@@ -3041,9 +3295,7 @@
                           },
                           "Append_User_Pagination_UserId": {
                             "runAfter": {
-                              "SCIM_User_Pagination_Create_User": [
-                                "Succeeded"
-                              ]
+                              "SCIM_User_Pagination_Create_User": ["Succeeded"]
                             },
                             "type": "AppendToArrayVariable",
                             "inputs": {
@@ -3078,9 +3330,7 @@
                   },
                   "Until_User_Pagination_Complete": {
                     "runAfter": {
-                      "Set_User_Pagination_Start_Url": [
-                        "Succeeded"
-                      ]
+                      "Set_User_Pagination_Start_Url": ["Succeeded"]
                     },
                     "type": "Until",
                     "expression": "@or(greaterOrEquals(variables('scimUserPaginationPageCount'), 10), equals(variables('scimUserPaginationNextUrl'), ''))",
@@ -3125,9 +3375,7 @@
                       },
                       "Increment_User_Page_Count": {
                         "runAfter": {
-                          "Append_User_Page_Result": [
-                            "Succeeded"
-                          ]
+                          "Append_User_Page_Result": ["Succeeded"]
                         },
                         "type": "IncrementVariable",
                         "inputs": {
@@ -3137,18 +3385,14 @@
                       },
                       "Compose_User_Next_Url": {
                         "runAfter": {
-                          "Increment_User_Page_Count": [
-                            "Succeeded"
-                          ]
+                          "Increment_User_Page_Count": ["Succeeded"]
                         },
                         "type": "Compose",
                         "inputs": "@if(and(greater(length(coalesce(body('SCIM_User_Pagination_Get_Page')?['Resources'], json('[]'))), 0), lessOrEquals(add(coalesce(body('SCIM_User_Pagination_Get_Page')?['startIndex'], 1), length(coalesce(body('SCIM_User_Pagination_Get_Page')?['Resources'], json('[]')))), coalesce(body('SCIM_User_Pagination_Get_Page')?['totalResults'], 0))), concat(parameters('scimEndpoint'), '/Users?startIndex=', string(add(coalesce(body('SCIM_User_Pagination_Get_Page')?['startIndex'], 1), length(coalesce(body('SCIM_User_Pagination_Get_Page')?['Resources'], json('[]'))))), '&count=5'), '')"
                       },
                       "Set_User_Next_Url": {
                         "runAfter": {
-                          "Compose_User_Next_Url": [
-                            "Succeeded"
-                          ]
+                          "Compose_User_Next_Url": ["Succeeded"]
                         },
                         "type": "SetVariable",
                         "inputs": {
@@ -3160,10 +3404,7 @@
                   },
                   "Filter_User_Pagination_Failed_Pages": {
                     "runAfter": {
-                      "Until_User_Pagination_Complete": [
-                        "Succeeded",
-                        "Failed"
-                      ]
+                      "Until_User_Pagination_Complete": ["Succeeded", "Failed"]
                     },
                     "type": "Query",
                     "inputs": {
@@ -3254,16 +3495,10 @@
             "expression": {
               "or": [
                 {
-                  "equals": [
-                    "@triggerBody()?['EnabledTests']",
-                    "All"
-                  ]
+                  "equals": ["@triggerBody()?['EnabledTests']", "All"]
                 },
                 {
-                  "equals": [
-                    "@triggerBody()?['EnabledTests']",
-                    "SCIMTests"
-                  ]
+                  "equals": ["@triggerBody()?['EnabledTests']", "SCIMTests"]
                 },
                 {
                   "equals": [
@@ -3302,9 +3537,7 @@
                   },
                   "Check_Group_Pagination_Need_Create": {
                     "runAfter": {
-                      "Compose_Group_Pagination_Groups_To_Create": [
-                        "Succeeded"
-                      ]
+                      "Compose_Group_Pagination_Groups_To_Create": ["Succeeded"]
                     },
                     "type": "If",
                     "expression": {
@@ -3374,9 +3607,7 @@
                   },
                   "Until_Group_Pagination_Complete": {
                     "runAfter": {
-                      "Set_Group_Pagination_Start_Url": [
-                        "Succeeded"
-                      ]
+                      "Set_Group_Pagination_Start_Url": ["Succeeded"]
                     },
                     "type": "Until",
                     "expression": "@or(greaterOrEquals(variables('scimGroupPaginationPageCount'), 10), equals(variables('scimGroupPaginationNextUrl'), ''))",
@@ -3421,9 +3652,7 @@
                       },
                       "Increment_Group_Page_Count": {
                         "runAfter": {
-                          "Append_Group_Page_Result": [
-                            "Succeeded"
-                          ]
+                          "Append_Group_Page_Result": ["Succeeded"]
                         },
                         "type": "IncrementVariable",
                         "inputs": {
@@ -3433,18 +3662,14 @@
                       },
                       "Compose_Group_Next_Url": {
                         "runAfter": {
-                          "Increment_Group_Page_Count": [
-                            "Succeeded"
-                          ]
+                          "Increment_Group_Page_Count": ["Succeeded"]
                         },
                         "type": "Compose",
                         "inputs": "@if(and(greater(length(coalesce(body('SCIM_Group_Pagination_Get_Page')?['Resources'], json('[]'))), 0), lessOrEquals(add(coalesce(body('SCIM_Group_Pagination_Get_Page')?['startIndex'], 1), length(coalesce(body('SCIM_Group_Pagination_Get_Page')?['Resources'], json('[]')))), coalesce(body('SCIM_Group_Pagination_Get_Page')?['totalResults'], 0))), concat(parameters('scimEndpoint'), '/Groups?startIndex=', string(add(coalesce(body('SCIM_Group_Pagination_Get_Page')?['startIndex'], 1), length(coalesce(body('SCIM_Group_Pagination_Get_Page')?['Resources'], json('[]'))))), '&count=5'), '')"
                       },
                       "Set_Group_Next_Url": {
                         "runAfter": {
-                          "Compose_Group_Next_Url": [
-                            "Succeeded"
-                          ]
+                          "Compose_Group_Next_Url": ["Succeeded"]
                         },
                         "type": "SetVariable",
                         "inputs": {
@@ -3456,10 +3681,7 @@
                   },
                   "Filter_Group_Pagination_Failed_Pages": {
                     "runAfter": {
-                      "Until_Group_Pagination_Complete": [
-                        "Succeeded",
-                        "Failed"
-                      ]
+                      "Until_Group_Pagination_Complete": ["Succeeded", "Failed"]
                     },
                     "type": "Query",
                     "inputs": {
@@ -3558,16 +3780,10 @@
                 {
                   "or": [
                     {
-                      "equals": [
-                        "@triggerBody()?['EnabledTests']",
-                        "All"
-                      ]
+                      "equals": ["@triggerBody()?['EnabledTests']", "All"]
                     },
                     {
-                      "equals": [
-                        "@triggerBody()?['EnabledTests']",
-                        "SCIMTests"
-                      ]
+                      "equals": ["@triggerBody()?['EnabledTests']", "SCIMTests"]
                     },
                     {
                       "equals": [
@@ -3583,32 +3799,26 @@
           }
         },
         "runAfter": {
-          "Response_Immediate": [
-            "Succeeded"
-          ]
+          "Response_Immediate": ["Succeeded"]
         },
         "type": "Scope"
       },
       "Compose_Final_Results": {
         "runAfter": {
-          "SCIMTests_Scope": [
-            "Succeeded",
-            "Failed",
-            "Skipped",
-            "TimedOut"
-          ]
+          "SCIMTests_Scope": ["Succeeded", "Failed", "Skipped", "TimedOut"]
         },
         "type": "Compose",
         "inputs": {
           "SchemaDiscoverabilityTestOutputs": "@variables('SchemaDiscoverabilityTestOutputs')",
           "SCIMNullUpdateTestOutputs": "@variables('SCIMNullUpdateTestOutputs')",
           "ValidateCredentialsTestOutputs": "@variables('ValidateCredentialsTestOutputs')",
+          "FederatedIdentityTestOutputs": "@variables('FederatedIdentityTestOutputs')",
           "SCIMUserCreateTestOutputs": "@variables('SCIMUserCreateTestOutputs')",
           "SCIMGroupCreateTestOutputs": "@variables('SCIMGroupCreateTestOutputs')",
           "SCIMUserUpdateTestOutputs": "@variables('SCIMUserUpdateTestOutputs')",
           "SCIMGroupUpdateTestOutputs": "@variables('SCIMGroupUpdateTestOutputs')",
           "testSuiteName": "SCIMTests",
-          "status": "@if(or(or(or(equals(variables('SchemaDiscoverabilityTestOutputs')['overallResult'], 'FAILED'), equals(variables('SCIMNullUpdateTestOutputs')['overallResult'], 'FAILED')), or(equals(variables('ValidateCredentialsTestOutputs')['overallResult'], 'FAILED'), equals(variables('SCIMUserCreateTestOutputs')['overallResult'], 'FAILED'))), or(or(equals(variables('SCIMGroupCreateTestOutputs')['overallResult'], 'FAILED'), equals(variables('SCIMUserUpdateTestOutputs')['overallResult'], 'FAILED')), equals(variables('SCIMGroupUpdateTestOutputs')['overallResult'], 'FAILED'))), 'Failed', 'Passed')",
+          "status": "@if(or(or(or(equals(variables('SchemaDiscoverabilityTestOutputs')['overallResult'], 'FAILED'), equals(variables('SCIMNullUpdateTestOutputs')['overallResult'], 'FAILED')), or(or(equals(variables('ValidateCredentialsTestOutputs')['overallResult'], 'FAILED'), equals(variables('FederatedIdentityTestOutputs')['overallResult'], 'FAILED')), equals(variables('SCIMUserCreateTestOutputs')['overallResult'], 'FAILED'))), or(or(equals(variables('SCIMGroupCreateTestOutputs')['overallResult'], 'FAILED'), equals(variables('SCIMUserUpdateTestOutputs')['overallResult'], 'FAILED')), equals(variables('SCIMGroupUpdateTestOutputs')['overallResult'], 'FAILED'))), 'Failed', 'Passed')",
           "workflowRunId": "@workflow().run.name",
           "SCIMUserPaginationTestOutputs": "@variables('SCIMUserPaginationTestOutputs')",
           "SCIMGroupPaginationTestOutputs": "@variables('SCIMGroupPaginationTestOutputs')"

@@ -286,40 +286,39 @@ az rest --method POST \
 
 > ⚠️ **GATE: Do NOT proceed to Sub-step 2b-3 until the saved-credential Test Connection returns 200/204.** Creating a sync job with invalid credentials causes immediate quarantine, and recovering from quarantine requires a full restart cycle (re-PUT secrets → restart job with `resetScope: Full` → start → re-verify). It is far cheaper to fix credentials now.
 
-**Sub-step 2b-3: Create the sync job**
+**Sub-step 2b-3: Verify tenant allowlist (check template availability)**
+
+Before creating the sync job, verify the `isvonboarding` synchronization template is available on the service principal. Template availability is the definitive allowlist gate — if the tenant is not allowlisted, the template will not appear.
+
+```bash
+az rest --method GET \
+  --url "https://graph.microsoft.com/v1.0/servicePrincipals/<servicePrincipalId>/synchronization/templates"
+```
+
+Check the response: look for a template with `"id": "isvonboarding"` in the `value` array.
+
+**If the `isvonboarding` template is NOT present (empty `value` array, or no template with that ID):**
+
+> ⚠️ **STOP — do NOT proceed with any further steps (do NOT create the sync job, Logic App, storage account, resource group, or permissions).** The tenant is not allowlisted for the ISVOnboarding provisioning application. The `isvonboarding` synchronization template is not available on this service principal, which means provisioning features (schema, sync execution, provisionOnDemand) will not work. Inform the ISV:
+>
+> *Your tenant is not allowlisted for the ISVOnboarding provisioning application. The `isvonboarding` template is not available. Submit an allowlisting request by completing the form at:*
+>
+> 📄 **https://forms.microsoft.com/pages/responsepage.aspx?id=v4j5cvGGr0GRqy180BHbR3elR4YvzS1IhaP_XITThvJUODY1UTJSSUFXTzFYMTQ0SkxSWTY4OTYzRi4u&route=shorturl**
+>
+> *After submitting, wait for an explicit confirmation from the Microsoft team that your tenant has been allowlisted. Do not attempt to continue until you receive this confirmation. The Entra app has been left in place. Once confirmed, restart the agent — it will detect the existing resources and continue from where it left off.*
+>
+> Also surface the raw response from the templates endpoint verbatim so the ISV can share it with Microsoft support if needed.
+
+**If the `isvonboarding` template IS present** → the tenant is allowlisted. Proceed to create the sync job.
+
+**Sub-step 2b-4: Create the sync job**
+
 ```bash
 az rest --method POST \
   --url "https://graph.microsoft.com/v1.0/servicePrincipals/<servicePrincipalId>/synchronization/jobs" \
   --body '{"templateId":"isvonboarding"}'
 ```
 Extract the `jobId` from the response.
-
-**Sub-step 2b-4: Verify tenant whitelist**
-
-The sync job response includes `synchronizationJobSettings` with a `tenantWhitelist` entry — a JSON array of tenant IDs that are authorized to use the ISVOnboarding provisioning features (schema, sync execution, provisionOnDemand). Check if the ISV's tenant is in the list:
-
-```python
-import json
-whitelist_str = '<tenantWhitelist value from synchronizationJobSettings>'
-whitelist = json.loads(whitelist_str)
-isv_tenant = '<tenantId from az rest .../organization>'
-if isv_tenant not in whitelist:
-    print(f"BLOCKED: Tenant {isv_tenant} is not in the whitelist.")
-else:
-    print("Tenant is whitelisted — proceed.")
-```
-
-**If the ISV's tenant is NOT in the whitelist:**
-
-> ⚠️ **STOP — do NOT proceed with any further steps (do NOT create the Logic App, storage account, or permissions).** Inform the ISV:
->
-> *Your tenant is not whitelisted for the ISVOnboarding provisioning application. Provisioning schema, sync execution, and test operations will fail with 401 Unauthorized until your tenant is whitelisted. Submit a whitelisting request by completing the form at:*
->
-> 📄 **https://forms.microsoft.com/pages/responsepage.aspx?id=v4j5cvGGr0GRqy180BHbR3elR4YvzS1IhaP_XITThvJUODY1UTJSSUFXTzFYMTQ0SkxSWTY4OTYzRi4u&route=shorturl**
->
-> *After submitting, wait for an explicit confirmation from the Microsoft team that your tenant has been whitelisted. Do not attempt to continue until you receive this confirmation. The Entra app and sync job have been left in place. Once confirmed, restart the agent — it will detect the existing resources and continue from where it left off.*
-
-**If the ISV's tenant IS in the whitelist** → proceed normally.
 
 **Do NOT start the provisioning job yet** — the ISV must review attribute mappings first (Phase 3).
 

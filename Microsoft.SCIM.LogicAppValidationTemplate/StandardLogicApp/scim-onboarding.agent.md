@@ -294,32 +294,28 @@ az rest --method POST \
 ```
 Extract the `jobId` from the response.
 
-**Sub-step 2b-4: Verify tenant whitelist**
+**Sub-step 2b-4: Verify tenant allowlist (probe the provisioning job)**
 
-The sync job response includes `synchronizationJobSettings` with a `tenantWhitelist` entry — a JSON array of tenant IDs that are authorized to use the ISVOnboarding provisioning features (schema, sync execution, provisionOnDemand). Check if the ISV's tenant is in the list:
+Sync job creation succeeds regardless of whether the tenant is allowlisted. The allowlist is enforced when you first **access** the job. Probe immediately after creation — before creating any Azure infrastructure — so we fail fast:
 
-```python
-import json
-whitelist_str = '<tenantWhitelist value from synchronizationJobSettings>'
-whitelist = json.loads(whitelist_str)
-isv_tenant = '<tenantId from az rest .../organization>'
-if isv_tenant not in whitelist:
-    print(f"BLOCKED: Tenant {isv_tenant} is not in the whitelist.")
-else:
-    print("Tenant is whitelisted — proceed.")
+```bash
+az rest --method GET \
+  --url "https://graph.microsoft.com/v1.0/servicePrincipals/<servicePrincipalId>/synchronization/jobs/<jobId>/schema"
 ```
 
-**If the ISV's tenant is NOT in the whitelist:**
+**If the schema fetch fails (HTTP 401/403):**
 
-> ⚠️ **STOP — do NOT proceed with any further steps (do NOT create the Logic App, storage account, or permissions).** Inform the ISV:
+> ⚠️ **STOP — do NOT proceed with any further steps (do NOT create the Logic App, storage account, resource group, or permissions).** The tenant is not allowlisted for the ISVOnboarding provisioning application. Provisioning job creation succeeds for any tenant, but accessing provisioning jobs (schema, start, provisionOnDemand) requires the tenant to be on the allowlist. Inform the ISV:
 >
-> *Your tenant is not whitelisted for the ISVOnboarding provisioning application. Provisioning schema, sync execution, and test operations will fail with 401 Unauthorized until your tenant is whitelisted. Submit a whitelisting request by completing the form at:*
+> *Your tenant is not allowlisted for the ISVOnboarding provisioning application. The sync job was created but provisioning features (schema, sync execution, provisionOnDemand) are blocked. Submit an allowlisting request by completing the form at:*
 >
 > 📄 **https://forms.microsoft.com/pages/responsepage.aspx?id=v4j5cvGGr0GRqy180BHbR3elR4YvzS1IhaP_XITThvJUODY1UTJSSUFXTzFYMTQ0SkxSWTY4OTYzRi4u&route=shorturl**
 >
-> *After submitting, wait for an explicit confirmation from the Microsoft team that your tenant has been whitelisted. Do not attempt to continue until you receive this confirmation. The Entra app and sync job have been left in place. Once confirmed, restart the agent — it will detect the existing resources and continue from where it left off.*
+> *After submitting, wait for an explicit confirmation from the Microsoft team that your tenant has been allowlisted. Do not attempt to continue until you receive this confirmation. The Entra app and sync job have been left in place. Once confirmed, restart the agent — it will detect the existing resources and continue from where it left off.*
+>
+> Also surface the raw error response verbatim so the ISV can share it with Microsoft support if needed.
 
-**If the ISV's tenant IS in the whitelist** → proceed normally.
+**If the schema fetch succeeds (HTTP 200)** → the tenant is allowlisted. Proceed to Step 2c.
 
 **Do NOT start the provisioning job yet** — the ISV must review attribute mappings first (Phase 3).
 

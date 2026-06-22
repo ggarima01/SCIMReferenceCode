@@ -68,6 +68,18 @@ Collect the ISV's SCIM endpoint and bearer token, validate their Azure environme
           The agent treats `none` (case-insensitive) as an empty scope when writing `scimOAuthScope` to `parameters.json`.
       - If **static bearer token**: record `authMethod = bearer`. The 4 OAuth fields (`scimClientId`, `scimClientSecret`, `scimTokenEndpoint`, `scimOAuthScope`) will be written as empty strings in Phase 4. (Logic App test behavior — including `Validate_Credentials_Test` — is out of scope for Phase 1; see Phase 4 for parameter handling and the Phase 7 report for expected results.)
 
+      d. **Federated identity test inputs (for `Federated_Identity_Test`)**:
+        - Ask: "Do you want to run the federated identity validation test now?"
+        - If **yes**, collect these values one at a time:
+          - `federatedEntraTenantId`
+          - `federatedApplicationId`
+          - `federatedApplicationClientSecret`
+          - `federatedTokenEndpoint`
+          - `federatedClientId`
+          - `federatedBaseAddress`
+          - `federatedAudience` (required for Google STS/SA flow, optional otherwise)
+        - If **no**, set all federated fields to empty strings in Phase 4 so the parameters contract remains complete.
+
    **You MUST ask these questions using `ask_user`. Do NOT assume values, do NOT skip OAuth questions, and do NOT proceed until the ISV has answered.**
 
 3. **Validate Azure CLI login**:
@@ -286,39 +298,40 @@ az rest --method POST \
 
 > ⚠️ **GATE: Do NOT proceed to Sub-step 2b-3 until the saved-credential Test Connection returns 200/204.** Creating a sync job with invalid credentials causes immediate quarantine, and recovering from quarantine requires a full restart cycle (re-PUT secrets → restart job with `resetScope: Full` → start → re-verify). It is far cheaper to fix credentials now.
 
-**Sub-step 2b-3: Verify tenant allowlist (check template availability)**
-
-Before creating the sync job, verify the `isvonboarding` synchronization template is available on the service principal. Template availability is the definitive allowlist gate — if the tenant is not allowlisted, the template will not appear.
-
-```bash
-az rest --method GET \
-  --url "https://graph.microsoft.com/v1.0/servicePrincipals/<servicePrincipalId>/synchronization/templates"
-```
-
-Check the response: look for a template with `"id": "isvonboarding"` in the `value` array.
-
-**If the `isvonboarding` template is NOT present (empty `value` array, or no template with that ID):**
-
-> ⚠️ **STOP — do NOT proceed with any further steps (do NOT create the sync job, Logic App, storage account, resource group, or permissions).** The tenant is not allowlisted for the ISVOnboarding provisioning application. The `isvonboarding` synchronization template is not available on this service principal, which means provisioning features (schema, sync execution, provisionOnDemand) will not work. Inform the ISV:
->
-> *Your tenant is not allowlisted for the ISVOnboarding provisioning application. The `isvonboarding` template is not available. Submit an allowlisting request by completing the form at:*
->
-> 📄 **https://forms.microsoft.com/pages/responsepage.aspx?id=v4j5cvGGr0GRqy180BHbR3elR4YvzS1IhaP_XITThvJUODY1UTJSSUFXTzFYMTQ0SkxSWTY4OTYzRi4u&route=shorturl**
->
-> *After submitting, wait for an explicit confirmation from the Microsoft team that your tenant has been allowlisted. Do not attempt to continue until you receive this confirmation. The Entra app has been left in place. Once confirmed, restart the agent — it will detect the existing resources and continue from where it left off.*
->
-> Also surface the raw response from the templates endpoint verbatim so the ISV can share it with Microsoft support if needed.
-
-**If the `isvonboarding` template IS present** → the tenant is allowlisted. Proceed to create the sync job.
-
-**Sub-step 2b-4: Create the sync job**
-
+**Sub-step 2b-3: Create the sync job**
 ```bash
 az rest --method POST \
   --url "https://graph.microsoft.com/v1.0/servicePrincipals/<servicePrincipalId>/synchronization/jobs" \
   --body '{"templateId":"isvonboarding"}'
 ```
 Extract the `jobId` from the response.
+
+**Sub-step 2b-4: Verify tenant whitelist**
+
+The sync job response includes `synchronizationJobSettings` with a `tenantWhitelist` entry — a JSON array of tenant IDs that are authorized to use the ISVOnboarding provisioning features (schema, sync execution, provisionOnDemand). Check if the ISV's tenant is in the list:
+
+```python
+import json
+whitelist_str = '<tenantWhitelist value from synchronizationJobSettings>'
+whitelist = json.loads(whitelist_str)
+isv_tenant = '<tenantId from az rest .../organization>'
+if isv_tenant not in whitelist:
+    print(f"BLOCKED: Tenant {isv_tenant} is not in the whitelist.")
+else:
+    print("Tenant is whitelisted — proceed.")
+```
+
+**If the ISV's tenant is NOT in the whitelist:**
+
+> ⚠️ **STOP — do NOT proceed with any further steps (do NOT create the Logic App, storage account, or permissions).** Inform the ISV:
+>
+> *Your tenant is not whitelisted for the ISVOnboarding provisioning application. Provisioning schema, sync execution, and test operations will fail with 401 Unauthorized until your tenant is whitelisted. Submit a whitelisting request by completing the form at:*
+>
+> 📄 **https://forms.microsoft.com/pages/responsepage.aspx?id=v4j5cvGGr0GRqy180BHbR3elR4YvzS1IhaP_XITThvJUODY1UTJSSUFXTzFYMTQ0SkxSWTY4OTYzRi4u&route=shorturl**
+>
+> *After submitting, wait for an explicit confirmation from the Microsoft team that your tenant has been whitelisted. Do not attempt to continue until you receive this confirmation. The Entra app and sync job have been left in place. Once confirmed, restart the agent — it will detect the existing resources and continue from where it left off.*
+
+**If the ISV's tenant IS in the whitelist** → proceed normally.
 
 **Do NOT start the provisioning job yet** — the ISV must review attribute mappings first (Phase 3).
 
@@ -333,12 +346,27 @@ Extract the `jobId` from the response.
 | `scimTokenEndpoint` | `""` | `<tokenEndpoint>` |
 | `scimOAuthScope` | `""` | `<scope>` |
 
+For federated identity testing, also pass these Phase 4 parameters:
+
+| Parameter | Value when provided | Value when not provided |
+|---|---|---|
+| `federatedEntraTenantId` | `<tenantId>` | `""` |
+| `federatedApplicationId` | `<entraAppClientId>` | `""` |
+| `federatedApplicationClientSecret` | `<entraAppClientSecret>` | `""` |
+| `federatedTokenEndpoint` | `<isvFederatedTokenEndpoint>` | `""` |
+| `federatedClientId` | `<isvFederatedClientId>` | `""` |
+| `federatedBaseAddress` | `<isvFederatedBaseAddress>` | `""` |
+| `federatedAudience` | `<audience>` | `""` |
+
+`federatedGrantType` is intentionally omitted because workflow code now derives the grant type.
+
 **Test behavior differences:**
 
 | Test | Branch A | Branch B |
 |---|---|---|
-| 22 SCIM tests | Use `scimBearerToken` ✓ | Use `scimBearerToken` ✓ |
+| Core SCIM tests | Use `scimBearerToken` ✓ | Use `scimBearerToken` ✓ |
 | `Validate_Credentials_Test` | **SKIPPED** (empty tokenEndpoint) | **RUNS** (exercises OAuth) |
+| `Federated_Identity_Test` | **SKIPPED/FAILED based on missing federated inputs** | **RUNS** when federated inputs are populated |
 | POD / sync engine | Uses bearer from stored secrets | Uses OAuth from stored secrets |
 
 #### Step 2c: Create resource group (if needed)
@@ -866,6 +894,13 @@ Update these parameters in the JSON:
 | `scimClientSecret` | `<ISV's OAuth client secret>` | From Phase 1 — same. Empty string if not provided. |
 | `scimTokenEndpoint` | `<ISV's OAuth token endpoint>` | From Phase 1 — same. Empty string if not provided. |
 | `scimOAuthScope` | `<ISV's OAuth scope>` | From Phase 1 — optional, set if provided (empty string if not). |
+| `federatedEntraTenantId` | `<ISV's Entra tenant ID for federated test>` | From Phase 1 federated inputs — empty string if not provided. |
+| `federatedApplicationId` | `<Entra app client ID used for federated flow>` | From Phase 1 federated inputs — empty string if not provided. |
+| `federatedApplicationClientSecret` | `<Entra app client secret used for federated flow>` | From Phase 1 federated inputs — empty string if not provided. |
+| `federatedTokenEndpoint` | `<ISV federated token endpoint>` | From Phase 1 federated inputs — empty string if not provided. |
+| `federatedClientId` | `<ISV federated client identifier>` | From Phase 1 federated inputs — empty string if not provided. |
+| `federatedBaseAddress` | `<ISV SCIM base address for federated exchange>` | From Phase 1 federated inputs — empty string if not provided. |
+| `federatedAudience` | `<Audience value for Google token exchange>` | From Phase 1 federated inputs — empty string if not provided. |
 
 #### Required-keys check (run BEFORE the PUT)
 
@@ -875,7 +910,9 @@ After patching the JSON in memory, assert every key below exists at the top leve
 servicePrincipalId, scimEndpoint, scimBearerToken, scimContentType,
 testUserDomain, EnabledTests, IsSoftDeleted,
 defaultUserProperties, defaultGroupProperties, scimTargetUserValues,
-scimClientId, scimClientSecret, scimTokenEndpoint, scimOAuthScope
+scimClientId, scimClientSecret, scimTokenEndpoint, scimOAuthScope,
+federatedEntraTenantId, federatedApplicationId, federatedApplicationClientSecret,
+federatedTokenEndpoint, federatedClientId, federatedBaseAddress, federatedAudience
 ```
 
 If any key is missing, abort Phase 4 and tell the ISV exactly which key is missing. Do NOT PUT a parameters.json that fails this check.
@@ -885,6 +922,8 @@ If any key is missing, abort Phase 4 and tell the ISV exactly which key is missi
 After the PUT completes, re-GET `parameters.json` and for each key in the patch table above, assert the returned value matches what was sent. If `servicePrincipalId` was supposed to be `aaa-bbb-ccc` but the read-back shows something else (or the key is missing), abort Phase 4 with the specific mismatch. Do NOT proceed to Phase 5.
 
 If the ISV did not provide OAuth credentials, leave `scimClientId`, `scimClientSecret`, `scimTokenEndpoint`, and `scimOAuthScope` as empty strings. The `Validate_Credentials_Test` will be SKIPPED — note this as expected in the final report. This is unrelated to the Entra sync engine, which always uses the bearer token (`SecretToken`) configured in Step 2b.
+
+If the ISV did not provide federated identity inputs, leave all federated parameters as empty strings (`federatedEntraTenantId`, `federatedApplicationId`, `federatedApplicationClientSecret`, `federatedTokenEndpoint`, `federatedClientId`, `federatedBaseAddress`, `federatedAudience`).
 
 #### defaultUserProperties handling (CRITICAL — do NOT build from scratch)
 
@@ -925,7 +964,7 @@ curl -X PUT \
 `Group_Update_Remove_Member_Test`, `POD_Group_Test`, `Restore_Group_Test`, `Schema_Discoverability_Test`, `SCIM_Null_Update_Test`,
 `SCIM_User_Create_Test`, `SCIM_User_Update_Test`,
 `SCIM_Group_Create_Test`, `SCIM_Group_Update_Test`,
-`SCIM_User_Pagination_Test`, `Validate_Credentials_Test`
+`SCIM_User_Pagination_Test`, `SCIM_Group_Pagination_Test`, `Validate_Credentials_Test`, `Federated_Identity_Test`
 
 ### Strategy: Run all tests at once
 Always set `EnabledTests = "All"` on **every** parameters.json write — first run, Phase 6 re-runs, and any retry. The child workflows (UserTests, GroupTests, SCIMTests) execute in parallel, so running all tests does not significantly increase total runtime compared to running subsets. If specific tests fail, the debug flow (Phase 6) identifies and addresses each failure individually — there is no need to gate on earlier tests passing first.
@@ -1178,7 +1217,7 @@ Follow this process for **every** failed test in `Final_TestResults`:
 `Final_TestResults` includes `childWorkflowRunLinks` — a map of workflow name → portal URL. Extract the `runId` from the URL path parameter. Match the failed test to its workflow:
 - `Create_User_Test`, `Update_User_Test`, `Delete_User_Test`, `Disable_User_Test`, `User_Update_Manager_Test`, `Restore_User_Test`, `POD_User_Test` → **UserTests_Workflow**
 - `Create_Group_Test`, `Update_Group_Test`, `Delete_Group_Test`, `Group_Update_Add_Member_Test`, `Group_Update_Remove_Member_Test`, `POD_Group_Test`, `Restore_Group_Test` → **GroupTests_Workflow**
-- `Schema_Discoverability_Test`, `SCIM_Null_Update_Test`, `SCIM_User_Create_Test`, `SCIM_User_Update_Test`, `SCIM_Group_Create_Test`, `SCIM_Group_Update_Test`, `SCIM_User_Pagination_Test`, `SCIM_Group_Pagination_Test`, `Validate_Credentials_Test` → **SCIMTests_Workflow**
+- `Schema_Discoverability_Test`, `SCIM_Null_Update_Test`, `SCIM_User_Create_Test`, `SCIM_User_Update_Test`, `SCIM_Group_Create_Test`, `SCIM_Group_Update_Test`, `SCIM_User_Pagination_Test`, `SCIM_Group_Pagination_Test`, `Validate_Credentials_Test`, `Federated_Identity_Test` → **SCIMTests_Workflow**
 
 #### 2. List all executed actions in the child workflow
 
